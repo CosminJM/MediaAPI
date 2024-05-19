@@ -20,6 +20,7 @@ namespace MediaAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
             builder.Services.AddDbContextFactory<MediaContext>(
                 dbContextOptions => dbContextOptions.UseSqlServer(builder.Configuration.GetConnectionString("MediaDB"))
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
@@ -37,8 +38,11 @@ namespace MediaAPI
 
             //builder.Services.AddTransient<Channel>();
             builder.Services.AddTransient<IChannelsRepository, ChannelsRepository>();
+            builder.Services.AddTransient<IUserRepository, UserRepository>();
 
             var app = builder.Build();
+
+            MigrateDb(app.Services);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -56,6 +60,19 @@ namespace MediaAPI
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static void MigrateDb(IServiceProvider serviceProvider)
+        {
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<MediaContext>>();
+
+                using (var dbContext = dbContextFactory.CreateDbContext())
+                {
+                    dbContext.Database.Migrate();
+                }
+            }
         }
     }
 }

@@ -30,5 +30,8 @@ namespace Media.Domain
                 .Where(p => p.GetValue(this) == null)
                 .Select(p => p.Name);
         }
+
+        //Many to many relationshiop to users
+        public ICollection<User> Users{ get; set; }
     }
 }

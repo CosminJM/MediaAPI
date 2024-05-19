@@ -8,7 +8,10 @@ namespace Media.DataAccess
     {
         private readonly IConfiguration _configuration;
 
-        public MediaContext() { }
+        //!!!------------------------------------------!!!
+        //uncomment to generate migration
+        //!!!------------------------------------------!!!
+        //public MediaContext() { }
 
         public MediaContext(DbContextOptions<MediaContext> options, IConfiguration configuration) : base(options)
         {
@@ -17,12 +20,14 @@ namespace Media.DataAccess
 
         public DbSet<Channel> Channels { get; set; }
         public DbSet<Video> Videos { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer("Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = MediaDB")
-            //    .LogTo(Console.WriteLine)
-            //    .EnableSensitiveDataLogging();
+            //!!!------------------------------------------!!!
+            //uncomment to generate migration
+            //!!!------------------------------------------!!!
+            //optionsBuilder.UseSqlServer("Data Source = (localdb)\\MSSQLLocalDB; Initial Catalog = MediaDB_1");
 
             //var connectionString = _configuration.GetConnectionString("MediaDB") ?? "DefaultConnectionString";
             //optionsBuilder.UseSqlServer(connectionString)
