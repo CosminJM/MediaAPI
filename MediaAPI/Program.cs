@@ -1,7 +1,5 @@
-
 using Media.DataAccess;
 using Media.DataAccess.Repository;
-using Media.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaAPI

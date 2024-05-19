@@ -13,4 +13,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Media.DataAccess\Media.DataAccess.csproj" />
+    <ProjectReference Include="..\Media.Domain\Media.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
