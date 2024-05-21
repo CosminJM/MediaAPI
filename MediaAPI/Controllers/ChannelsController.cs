@@ -2,8 +2,8 @@
 using Media.DataAccess.Repository;
 using Media.Domain;
 using MediaAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaAPI.Controllers
@@ -11,6 +11,7 @@ namespace MediaAPI.Controllers
     [Route("api/channels")]
     [ApiController]
     [EnableCors("AllowPolicy")]
+    [Authorize]
     public class ChannelsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -26,7 +27,10 @@ namespace MediaAPI.Controllers
         public async Task<IActionResult> GetChannels()
         {
             var channels = await _channelsRepository.GetAllAsync();
-            return Ok(channels);
+
+            var channelDto = _mapper.Map<List<ChannelDto>>(channels);
+
+            return Ok(channelDto);
         }
 
         [HttpGet("{id}", Name = "GetChannel")]

@@ -12,6 +12,7 @@ namespace MediaAPI.Profiles
             CreateMap<Channel, ChannelForCreationDto>();
             CreateMap<Channel, ChannelDto>();
             CreateMap<ChannelDto, Channel>();
+            CreateMap<Channel, ChannelDto>();
             CreateMap<ChannelForUpdateDto, Channel>();
 
         }
