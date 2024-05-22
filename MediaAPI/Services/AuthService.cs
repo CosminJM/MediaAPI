@@ -55,6 +55,28 @@ namespace MediaAPI.Services
             return GenerateJwtToken(user);
         }
 
+        public async Task<string> AuthenticateAsync(string username)
+        {
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return GenerateJwtToken(user);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[32];
+            using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomBytes);
+                return Convert.ToBase64String(randomBytes);
+            }
+        }
+
         private string GenerateJwtToken(User user)
         {
             var claims = new[]

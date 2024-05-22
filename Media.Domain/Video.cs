@@ -8,6 +8,11 @@ namespace Media.Domain
 {
     public class Video
     {
+        public Video()
+        {
+            Users = new List<User>();
+        }
+
         public int VideoId { get; set; }
         public string VideoIdentificator { get; set; }
         public string Title { get; set; }

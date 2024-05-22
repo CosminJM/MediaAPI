@@ -5,6 +5,7 @@ using MediaAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace MediaAPI.Controllers
 {
@@ -16,28 +17,40 @@ namespace MediaAPI.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IChannelsRepository _channelsRepository;
+        private readonly IUserRepository _userRepository;
 
-        public ChannelsController(IMapper mapper, IChannelsRepository channelsRepository)
+        public ChannelsController(IMapper mapper, IChannelsRepository channelsRepository, IUserRepository userRepository)
         {
             _mapper = mapper;
             _channelsRepository = channelsRepository;
+            _userRepository = userRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetChannels()
         {
-            var channels = await _channelsRepository.GetAllAsync();
+            var username = GetUsernameFromToken();
+            if (username == null)
+            {
+                return NotFound();
+            }
+            var channels = await _channelsRepository.GetAllByUserAsync(username);
 
             var channelDto = _mapper.Map<List<ChannelDto>>(channels);
 
             return Ok(channelDto);
         }
 
+        private string GetUsernameFromToken()
+        {
+            return User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        }
+
         [HttpGet("{id}", Name = "GetChannel")]
         public async Task<IActionResult> GetChannel(int id)
         {
             var channel = await _channelsRepository.GetByIdAsync(id);
-            if(channel == null)
+            if (channel == null)
             {
                 return NotFound();
             }
@@ -48,26 +61,36 @@ namespace MediaAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddChannel(ChannelForCreationDto channelForCreationDto)
         {
-            if(await _channelsRepository.ChannelExistsAsync(channelForCreationDto.ChannelIdentificator))
+            var username = GetUsernameFromToken();
+            if (username == null)
             {
-                return Ok("Channel exists.");
+                return NotFound();
+            }
+            if (await _channelsRepository.ChannelForUserExistsAsync(channelForCreationDto.ChannelIdentificator, username))
+            {
+                return BadRequest("Channel already exists.");
             }
 
             var channel = _mapper.Map<Channel>(channelForCreationDto);
 
-            await _channelsRepository.AddAsync(channel);
+            await _channelsRepository.AddChannelWithUserAsync(channel, username);
             await _channelsRepository.SaveChangesAsync();
 
             //Maybe return this with CreatedAtRoute()
             var channelToReturn = _mapper.Map<ChannelDto>(channel);
 
-            return CreatedAtRoute("GetChannel",new {id = channelToReturn.ChannelId }, channelToReturn);
+            return CreatedAtRoute("GetChannel", new { id = channelToReturn.ChannelId }, channelToReturn);
         }
 
         [HttpPut("{channelId}")]
         public async Task<IActionResult> UpdateChannel(int channelId, ChannelForUpdateDto channelForUpdateDto)
         {
-            var existingChannel = await _channelsRepository.GetByIdAsync(channelId);
+            var username = GetUsernameFromToken();
+            if (username == null)
+            {
+                return NotFound();
+            }
+            var existingChannel = await _channelsRepository.GetByIdAndUserAsync(channelId, username);
             if (existingChannel == null)
             {
                 return NotFound();
@@ -82,7 +105,12 @@ namespace MediaAPI.Controllers
         [HttpDelete("{channelId}")]
         public async Task<IActionResult> DeleteChannel(int channelId)
         {
-            var existingChannel = await _channelsRepository.GetByIdAsync(channelId);
+            var username = GetUsernameFromToken();
+            if (username == null)
+            {
+                return NotFound();
+            }
+            var existingChannel = await _channelsRepository.GetByIdAndUserAsync(channelId, username);
             if (existingChannel == null)
             {
                 return NotFound();

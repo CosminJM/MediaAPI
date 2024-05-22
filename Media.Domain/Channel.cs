@@ -5,6 +5,7 @@
         public Channel()
         {
             Videos = new List<Video>();
+            Users = new List<User>();
         }
 
         public int ChannelId { get; set; }

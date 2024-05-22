@@ -22,9 +22,19 @@ namespace Media.DataAccess.Repository
             return await _context.Channels.ToListAsync();
         }
 
+        public async Task<IEnumerable<Channel>> GetAllByUserAsync(string username)
+        {
+            return await _context.Channels.Where(c => c.Users.Any(u => u.Username == username)).ToListAsync();
+        }
+
         public async Task<Channel> GetByIdAsync(int id)
         {
             return await _context.Channels.FindAsync(id);
+        }
+
+        public async Task<Channel> GetByIdAndUserAsync(int id, string username)
+        {
+            return await _context.Channels.Where(c => c.Users.Any(u => u.Username == username) && c.ChannelId == id).FirstOrDefaultAsync();
         }
 
         public async Task<bool> ChannelExistsAsync(string channelIdentificator)
@@ -32,10 +42,23 @@ namespace Media.DataAccess.Repository
             return await _context.Channels.AnyAsync(c => c.ChannelIdentificator == channelIdentificator);
         }
 
+        public async Task<bool> ChannelForUserExistsAsync(string channelIdentificator,string username)
+        {
+            return await _context.Channels.AnyAsync(c =>c.Users.Any(u => u.Username == username) && c.ChannelIdentificator == channelIdentificator);
+        }
+
         public async Task AddAsync(Channel entity)
         {
             if (await ChannelExistsAsync(entity.ChannelIdentificator)) return;
             await _context.Channels.AddAsync(entity);
+        }
+
+        public async Task AddChannelWithUserAsync(Channel channel, string username)
+        {
+            await _context.Channels.AddAsync(channel);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (user == null) return;
+            channel.Users.Add(user);
         }
 
         public async Task AddRangeAsync(IEnumerable<Channel> entities)
