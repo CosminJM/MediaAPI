@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Media.DataAccess.Repository;
 using Media.Domain;
+using MediaAPI.Extensions;
 using MediaAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -29,7 +30,7 @@ namespace MediaAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetChannels()
         {
-            var username = GetUsernameFromToken();
+            var username = this.GetUsernameFromToken();
             if (username == null)
             {
                 return NotFound();
@@ -39,11 +40,6 @@ namespace MediaAPI.Controllers
             var channelDto = _mapper.Map<List<ChannelDto>>(channels);
 
             return Ok(channelDto);
-        }
-
-        private string GetUsernameFromToken()
-        {
-            return User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         }
 
         [HttpGet("{id}", Name = "GetChannel")]
@@ -61,7 +57,7 @@ namespace MediaAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddChannel(ChannelForCreationDto channelForCreationDto)
         {
-            var username = GetUsernameFromToken();
+            var username = this.GetUsernameFromToken();
             if (username == null)
             {
                 return NotFound();
@@ -85,7 +81,7 @@ namespace MediaAPI.Controllers
         [HttpPut("{channelId}")]
         public async Task<IActionResult> UpdateChannel(int channelId, ChannelForUpdateDto channelForUpdateDto)
         {
-            var username = GetUsernameFromToken();
+            var username = this.GetUsernameFromToken();
             if (username == null)
             {
                 return NotFound();
@@ -105,7 +101,7 @@ namespace MediaAPI.Controllers
         [HttpDelete("{channelId}")]
         public async Task<IActionResult> DeleteChannel(int channelId)
         {
-            var username = GetUsernameFromToken();
+            var username = this.GetUsernameFromToken();
             if (username == null)
             {
                 return NotFound();
