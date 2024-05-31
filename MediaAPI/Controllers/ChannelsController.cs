@@ -7,7 +7,6 @@ using MediaAPI.Models.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace MediaAPI.Controllers
 {
@@ -49,18 +48,6 @@ namespace MediaAPI.Controllers
             };
 
             return Ok(paginatedData);
-        }
-
-        [HttpGet("{id}", Name = "GetChannel")]
-        public async Task<IActionResult> GetChannel(int id)
-        {
-            var channel = await _channelsRepository.GetByIdAsync(id);
-            if (channel == null)
-            {
-                return NotFound();
-            }
-            var channelWithoutVideosDto = _mapper.Map<ChannelDto>(channel);
-            return Ok(channelWithoutVideosDto);
         }
 
         [HttpPost]

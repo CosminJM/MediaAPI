@@ -17,11 +17,6 @@ namespace Media.DataAccess.Repository
             _context = context;
         }
 
-        public async Task<IEnumerable<Channel>> GetAllAsync()
-        {
-            return await _context.Channels.ToListAsync();
-        }
-
         public async Task<(IEnumerable<Channel>, int)> GetAllByUserAsync(string username, int pageNumber, int pageSize, string search)
         {
             var foundData = _context.Channels
@@ -37,30 +32,14 @@ namespace Media.DataAccess.Repository
             return (paginatedData, totalRecords);
         }
 
-        public async Task<Channel> GetByIdAsync(int id)
-        {
-            return await _context.Channels.FindAsync(id);
-        }
-
         public async Task<Channel> GetByIdAndUserAsync(int id, string username)
         {
             return await _context.Channels.Where(c => c.Users.Any(u => u.Username == username) && c.ChannelId == id).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> ChannelExistsAsync(string channelIdentificator)
-        {
-            return await _context.Channels.AnyAsync(c => c.ChannelIdentificator == channelIdentificator);
-        }
-
         public async Task<bool> ChannelForUserExistsAsync(string channelIdentificator, string username)
         {
             return await _context.Channels.AnyAsync(c => c.Users.Any(u => u.Username == username) && c.ChannelIdentificator == channelIdentificator);
-        }
-
-        public async Task AddAsync(Channel entity)
-        {
-            if (await ChannelExistsAsync(entity.ChannelIdentificator)) return;
-            await _context.Channels.AddAsync(entity);
         }
 
         public async Task AddChannelWithUserAsync(Channel channel, string username)
@@ -75,39 +54,6 @@ namespace Media.DataAccess.Repository
         {
             await _context.Channels.AddRangeAsync(entities);
         }
-
-        public async Task UpdateAsync(Channel entity)
-        {
-            var existingEntity = _context.Channels.Local.FirstOrDefault(e => e.ChannelId == entity.ChannelId);
-
-            if (existingEntity == null)
-            {
-                existingEntity = await _context.Channels.FindAsync(entity.ChannelId);
-            }
-
-            if (existingEntity != null)
-            {
-                _context.Entry(existingEntity).State = EntityState.Detached;
-            }
-
-            _context.Channels.Update(entity);
-        }
-
-        //public async Task DeleteAsync(Channel entity)
-        //{
-        //    var existingEntity = _context.Channels.Local.FirstOrDefault(e => e.ChannelId == entity.ChannelId);
-
-        //    if (existingEntity == null)
-        //    {
-        //        existingEntity = await _context.Channels.FindAsync(entity.ChannelId);
-        //    }
-
-        //    if (existingEntity != null)
-        //    {
-        //        _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-        //        _context.Channels.Remove(existingEntity);
-        //    }
-        //}
 
         public void Delete(Channel channel)
         {
