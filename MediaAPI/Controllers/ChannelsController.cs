@@ -29,14 +29,14 @@ namespace MediaAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetChannels([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<IActionResult> GetChannels([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string? search)
         {
             var username = this.GetUsernameFromToken();
             if (username == null)
             {
                 return NotFound();
             }
-            var (paginatedChannels, totalChannels) = await _channelsRepository.GetAllByUserAsync(username, pageNumber, pageSize);
+            var (paginatedChannels, totalRecords) = await _channelsRepository.GetAllByUserAsync(username, pageNumber, pageSize, search);
 
             var channelDto = _mapper.Map<List<ChannelDto>>(paginatedChannels);
 
@@ -45,7 +45,7 @@ namespace MediaAPI.Controllers
                 ResponseData = channelDto,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                TotalRecords = totalChannels
+                TotalRecords = totalRecords
             };
 
             return Ok(paginatedData);

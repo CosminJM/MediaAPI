@@ -11,7 +11,7 @@ namespace Media.DataAccess.Repository
         Task<bool> ChannelForUserExistsAsync(string channelIdentificator, string username);
         void Delete(Channel entity);
         Task<IEnumerable<Channel>> GetAllAsync();
-        Task<(IEnumerable<Channel>,int)> GetAllByUserAsync(string username, int pageNumber, int pageSize);
+        Task<(IEnumerable<Channel>,int)> GetAllByUserAsync(string username, int pageNumber, int pageSize, string search);
         Task<Channel> GetByIdAndUserAsync(int id, string username);
         Task<Channel> GetByIdAsync(int id);
         Task<bool> SaveChangesAsync();

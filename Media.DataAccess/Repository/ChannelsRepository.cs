@@ -22,15 +22,19 @@ namespace Media.DataAccess.Repository
             return await _context.Channels.ToListAsync();
         }
 
-        public async Task<(IEnumerable<Channel>,int)> GetAllByUserAsync(string username, int pageNumber, int pageSize)
+        public async Task<(IEnumerable<Channel>, int)> GetAllByUserAsync(string username, int pageNumber, int pageSize, string search)
         {
-            var totalChannels = await _context.Channels.CountAsync();
-            var paginatedData = await _context.Channels
-                .Where(c => c.Users.Any(u => u.Username == username))
+            var foundData = _context.Channels
+                .Where(c => c.Users.Any(u => u.Username == username) && (string.IsNullOrEmpty(search)/*return true (all values for user) if search is empty */ || c.Name.Contains(search) || c.ChannelIdentificator.Contains(search)));
+            var totalRecords = await foundData.CountAsync();
+
+            var paginatedData = await foundData
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
+                .OrderBy(c => c.Name)
                 .ToListAsync();
-            return (paginatedData,  totalChannels);
+
+            return (paginatedData, totalRecords);
         }
 
         public async Task<Channel> GetByIdAsync(int id)
@@ -48,9 +52,9 @@ namespace Media.DataAccess.Repository
             return await _context.Channels.AnyAsync(c => c.ChannelIdentificator == channelIdentificator);
         }
 
-        public async Task<bool> ChannelForUserExistsAsync(string channelIdentificator,string username)
+        public async Task<bool> ChannelForUserExistsAsync(string channelIdentificator, string username)
         {
-            return await _context.Channels.AnyAsync(c =>c.Users.Any(u => u.Username == username) && c.ChannelIdentificator == channelIdentificator);
+            return await _context.Channels.AnyAsync(c => c.Users.Any(u => u.Username == username) && c.ChannelIdentificator == channelIdentificator);
         }
 
         public async Task AddAsync(Channel entity)
