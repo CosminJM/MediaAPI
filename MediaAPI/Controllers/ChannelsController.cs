@@ -3,6 +3,7 @@ using Media.DataAccess.Repository;
 using Media.Domain;
 using MediaAPI.Extensions;
 using MediaAPI.Models;
+using MediaAPI.Models.Pagination;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -28,18 +29,26 @@ namespace MediaAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetChannels()
+        public async Task<IActionResult> GetChannels([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             var username = this.GetUsernameFromToken();
             if (username == null)
             {
                 return NotFound();
             }
-            var channels = await _channelsRepository.GetAllByUserAsync(username);
+            var (paginatedChannels, totalChannels) = await _channelsRepository.GetAllByUserAsync(username, pageNumber, pageSize);
 
-            var channelDto = _mapper.Map<List<ChannelDto>>(channels);
+            var channelDto = _mapper.Map<List<ChannelDto>>(paginatedChannels);
 
-            return Ok(channelDto);
+            var paginatedData = new PaginatedResponse<ChannelDto>()
+            {
+                ResponseData = channelDto,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalChannels
+            };
+
+            return Ok(paginatedData);
         }
 
         [HttpGet("{id}", Name = "GetChannel")]

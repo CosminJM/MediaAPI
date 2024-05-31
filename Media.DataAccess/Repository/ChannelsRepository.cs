@@ -22,9 +22,15 @@ namespace Media.DataAccess.Repository
             return await _context.Channels.ToListAsync();
         }
 
-        public async Task<IEnumerable<Channel>> GetAllByUserAsync(string username)
+        public async Task<(IEnumerable<Channel>,int)> GetAllByUserAsync(string username, int pageNumber, int pageSize)
         {
-            return await _context.Channels.Where(c => c.Users.Any(u => u.Username == username)).ToListAsync();
+            var totalChannels = await _context.Channels.CountAsync();
+            var paginatedData = await _context.Channels
+                .Where(c => c.Users.Any(u => u.Username == username))
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            return (paginatedData,  totalChannels);
         }
 
         public async Task<Channel> GetByIdAsync(int id)
