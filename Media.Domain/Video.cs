@@ -13,7 +13,7 @@ namespace Media.Domain
             Users = new List<User>();
         }
 
-        public int VideoId { get; set; }
+        public Guid VideoId { get; set; }
         public string VideoIdentificator { get; set; }
         public string Title { get; set; }
         /// <summary>
@@ -21,7 +21,7 @@ namespace Media.Domain
         /// </summary>
         public int Duration { get; set; }
         public string Url { get; set; }
-        public int ChannelId { get; set; }
+        public Guid ChannelId { get; set; }
         public Channel Channel { get; set; }
         public DateTime QueriedFromDate { get; set; }
         public DateTime QueriedToDate { get; set; }

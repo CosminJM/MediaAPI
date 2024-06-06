@@ -24,11 +24,11 @@ namespace Media.DataAccess.Migrations
 
             modelBuilder.Entity("ChannelUser", b =>
                 {
-                    b.Property<int>("ChannelsChannelId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ChannelsChannelId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("UsersId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ChannelsChannelId", "UsersId");
 
@@ -39,11 +39,9 @@ namespace Media.DataAccess.Migrations
 
             modelBuilder.Entity("Media.Domain.Channel", b =>
                 {
-                    b.Property<int>("ChannelId")
+                    b.Property<Guid>("ChannelId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChannelId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ChannelIdentificator")
                         .HasColumnType("nvarchar(max)");
@@ -58,11 +56,9 @@ namespace Media.DataAccess.Migrations
 
             modelBuilder.Entity("Media.Domain.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -95,17 +91,15 @@ namespace Media.DataAccess.Migrations
 
             modelBuilder.Entity("Media.Domain.Video", b =>
                 {
-                    b.Property<int>("VideoId")
+                    b.Property<Guid>("VideoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VideoId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("AddedDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ChannelId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ChannelId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Duration")
                         .HasColumnType("int");
@@ -137,11 +131,11 @@ namespace Media.DataAccess.Migrations
 
             modelBuilder.Entity("UserVideo", b =>
                 {
-                    b.Property<int>("UsersId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("VideosVideoId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("VideosVideoId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("UsersId", "VideosVideoId");
 
