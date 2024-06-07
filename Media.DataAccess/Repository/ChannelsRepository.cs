@@ -12,9 +12,9 @@ namespace Media.DataAccess.Repository
     {
         private MediaContext _context;
 
-        public ChannelsRepository(MediaContext context)
+        public ChannelsRepository(IDbContextFactory<MediaContext> context)
         {
-            _context = context;
+            _context = context.CreateDbContext();
         }
 
         public async Task<(IEnumerable<Channel>, int)> GetAllByUserAsync(string username, int pageNumber, int pageSize, string search)

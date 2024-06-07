@@ -7,9 +7,9 @@ namespace Media.DataAccess.Repository
     {
         private readonly MediaContext _context;
 
-        public UserRepository(MediaContext context)
+        public UserRepository(IDbContextFactory<MediaContext> context)
         {
-            _context = context;
+            _context = context.CreateDbContext();
         }
 
         public async Task<User> GetUserByIdAsync(int id)

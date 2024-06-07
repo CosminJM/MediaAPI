@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="HotChocolate.AspNetCore" Version="13.9.5" />
+    <PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.9.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.5" />
@@ -17,6 +19,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Media.DataAccess\Media.DataAccess.csproj" />
     <ProjectReference Include="..\Media.Domain\Media.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Schema\Mutations\" />
   </ItemGroup>
 
 </Project>

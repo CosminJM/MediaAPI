@@ -1,5 +1,6 @@
 using Media.DataAccess;
 using Media.DataAccess.Repository;
+using MediaAPI.Schema.Queries;
 using MediaAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -25,22 +26,19 @@ namespace MediaAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContextFactory<MediaContext>(
+
+            builder.Services.AddGraphQLServer()
+                .AddQueryType<ChannelsQuery>();
+
+            builder.Services.AddPooledDbContextFactory<MediaContext>(
                 dbContextOptions => dbContextOptions.UseSqlServer(builder.Configuration.GetConnectionString("MediaDB"))
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
                 .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information)
                 );
+
+            //Mapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            builder.Services.AddCors(corsOptions =>
-            {
-                corsOptions.AddPolicy("AllowPolicy", policy =>
-                {
-                    policy.WithOrigins("http://localhost:9000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
-                });
-            });
-
-            //builder.Services.AddTransient<Channel>();
             builder.Services.AddTransient<IChannelsRepository, ChannelsRepository>();
             builder.Services.AddTransient<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -70,6 +68,14 @@ namespace MediaAPI
 
             builder.Services.AddAuthorization();
 
+            builder.Services.AddCors(corsOptions =>
+            {
+                corsOptions.AddPolicy("AllowPolicy", policy =>
+                {
+                    policy.WithOrigins("http://localhost:9000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                });
+            });
+
             var app = builder.Build();
 
             MigrateDb(app.Services);
@@ -83,11 +89,16 @@ namespace MediaAPI
 
             app.UseCors("AllowPolicy");
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            //For GraphQL Subscriptions
+            app.UseWebSockets();
+
+            app.MapGraphQL();
 
             app.MapControllers();
 
