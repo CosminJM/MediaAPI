@@ -75,7 +75,7 @@ namespace MediaAPI.Controllers
         }
 
         [HttpPut("{channelId}")]
-        public async Task<IActionResult> UpdateChannel(int channelId, ChannelForUpdateDto channelForUpdateDto)
+        public async Task<IActionResult> UpdateChannel(Guid channelId, ChannelForUpdateDto channelForUpdateDto)
         {
             var username = this.GetUsernameFromToken();
             if (username == null)
@@ -95,7 +95,7 @@ namespace MediaAPI.Controllers
         }
 
         [HttpDelete("{channelId}")]
-        public async Task<IActionResult> DeleteChannel(int channelId)
+        public async Task<IActionResult> DeleteChannel(Guid channelId)
         {
             var username = this.GetUsernameFromToken();
             if (username == null)

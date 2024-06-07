@@ -32,7 +32,7 @@ namespace Media.DataAccess.Repository
             return (paginatedData, totalRecords);
         }
 
-        public async Task<Channel> GetByIdAndUserAsync(int id, string username)
+        public async Task<Channel> GetByIdAndUserAsync(Guid id, string username)
         {
             return await _context.Channels.Where(c => c.Users.Any(u => u.Username == username) && c.ChannelId == id).FirstOrDefaultAsync();
         }

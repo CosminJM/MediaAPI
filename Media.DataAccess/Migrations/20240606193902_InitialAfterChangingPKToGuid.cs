@@ -6,17 +6,29 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Media.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class CreatedUserTableAndLinkedToChannelsAndVideos : Migration
+    public partial class InitialAfterChangingPKToGuid : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Channels",
+                columns: table => new
+                {
+                    ChannelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ChannelIdentificator = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Channels", x => x.ChannelId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
@@ -30,11 +42,37 @@ namespace Media.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Videos",
+                columns: table => new
+                {
+                    VideoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VideoIdentificator = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Duration = table.Column<int>(type: "int", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChannelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    QueriedFromDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    QueriedToDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AddedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FilteredByChannelName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Videos", x => x.VideoId);
+                    table.ForeignKey(
+                        name: "FK_Videos_Channels_ChannelId",
+                        column: x => x.ChannelId,
+                        principalTable: "Channels",
+                        principalColumn: "ChannelId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChannelUser",
                 columns: table => new
                 {
-                    ChannelsChannelId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
+                    ChannelsChannelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UsersId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -57,8 +95,8 @@ namespace Media.DataAccess.Migrations
                 name: "UserVideo",
                 columns: table => new
                 {
-                    UsersId = table.Column<int>(type: "int", nullable: false),
-                    VideosVideoId = table.Column<int>(type: "int", nullable: false)
+                    UsersId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VideosVideoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,19 +124,30 @@ namespace Media.DataAccess.Migrations
                 name: "IX_UserVideo_VideosVideoId",
                 table: "UserVideo",
                 column: "VideosVideoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Videos_ChannelId",
+                table: "Videos",
+                column: "ChannelId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ChannelUser");
+                name: "ChannelUser");          
 
             migrationBuilder.DropTable(
                 name: "UserVideo");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Videos");
+
+            migrationBuilder.DropTable(
+                name: "Channels");
         }
     }
 }
