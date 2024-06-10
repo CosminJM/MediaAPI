@@ -28,12 +28,16 @@ namespace MediaAPI
 
 
             builder.Services.AddGraphQLServer()
-                .AddQueryType<ChannelsQuery>();
+                .AddQueryType<Query>()
+                .AddType<UsersQuery>()
+                .AddType<ChannelsQuery>()
+                .AddAuthorization();
 
             builder.Services.AddPooledDbContextFactory<MediaContext>(
                 dbContextOptions => dbContextOptions.UseSqlServer(builder.Configuration.GetConnectionString("MediaDB"))
+                .EnableSensitiveDataLogging()
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
-                .LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information)
+                .LogTo(Console.WriteLine)
                 );
 
             //Mapper
