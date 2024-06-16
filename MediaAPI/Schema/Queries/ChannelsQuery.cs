@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using HotChocolate.Authorization;
 using Media.DataAccess;
-using Media.DataAccess.Repository;
 using MediaAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +23,7 @@ namespace MediaAPI.Schema.Queries
             var context = contextFactory.CreateDbContext();
             var channels = context.Channels.Select(c => _mapper.Map<ChannelDto>(c));
 
-            return channels; 
+            return channels;
         }
     }
 }

@@ -32,6 +32,11 @@ namespace Media.DataAccess.Repository
             return (paginatedData, totalRecords);
         }
 
+        public async Task<IEnumerable<Channel>> GetAllByUserAsync(string username)
+        {
+            return await _context.Channels.Where(c => c.Users.Any(u => u.Username == username)).ToListAsync();
+        }
+
         public async Task<Channel> GetByIdAndUserAsync(Guid id, string username)
         {
             return await _context.Channels.Where(c => c.Users.Any(u => u.Username == username) && c.ChannelId == id).FirstOrDefaultAsync();

@@ -1,5 +1,6 @@
 using Media.DataAccess;
 using Media.DataAccess.Repository;
+using MediaAPI.Schema.Mutations;
 using MediaAPI.Schema.Queries;
 using MediaAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,8 +30,10 @@ namespace MediaAPI
 
             builder.Services.AddGraphQLServer()
                 .AddQueryType<Query>()
-                .AddType<UsersQuery>()
-                .AddType<ChannelsQuery>()
+                .AddTypeExtension<UsersQuery>()
+                .AddTypeExtension<ChannelsQuery>()
+                .AddMutationType<Mutation>()
+                .AddTypeExtension<ChannelMutation>()
                 .AddAuthorization();
 
             builder.Services.AddPooledDbContextFactory<MediaContext>(
@@ -76,7 +79,7 @@ namespace MediaAPI
             {
                 corsOptions.AddPolicy("AllowPolicy", policy =>
                 {
-                    policy.WithOrigins("http://localhost:9000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                    policy.WithOrigins("http://localhost:9000", "https://localhost:7000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
                 });
             });
 
