@@ -1,5 +1,6 @@
 using Media.DataAccess;
 using Media.DataAccess.Repository;
+using MediaAPI.Models;
 using MediaAPI.Schema.Mutations;
 using MediaAPI.Schema.Queries;
 using MediaAPI.Services;
@@ -34,6 +35,8 @@ namespace MediaAPI
                 .AddTypeExtension<ChannelsQuery>()
                 .AddMutationType<Mutation>()
                 .AddTypeExtension<ChannelMutation>()
+                // Used types as arguments on queries and mutation must be specified
+                .AddType<ChannelForCreationDto>()
                 .AddAuthorization();
 
             builder.Services.AddPooledDbContextFactory<MediaContext>(

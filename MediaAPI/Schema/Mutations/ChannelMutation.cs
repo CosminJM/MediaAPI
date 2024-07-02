@@ -21,7 +21,7 @@ namespace MediaAPI.Schema.Mutations
 
         [Authorize]
         [UseUser]
-        public async Task<GqlResult<ChannelDto>> AddChannelAsync([User] User user, ChannelForCreationDto channelForCreationDto)
+        public async Task<GqlResult<ChannelDto>> AddChannelAsync([User] User user, ChannelForCreationDto channelForCreationDto) // ChannelForCreationDto should be ChannelForCreationDtoInput on mutation string when used as paramenter on client side
         {
             var channelsExists = await _channelsRepository.ChannelForUserExistsAsync(channelForCreationDto.ChannelIdentificator, user.Username);
             if (channelsExists)
@@ -37,7 +37,7 @@ namespace MediaAPI.Schema.Mutations
 
         [Authorize]
         [UseUser]
-        public async Task<GqlResult<ChannelDto>> UpdateChannel([User] User user, ChannelForUpdateDto channelForUpdateDto)
+        public async Task<GqlResult<ChannelDto>> UpdateChannelAsync([User] User user, ChannelForUpdateDto channelForUpdateDto)
         {
             var existingChannel = await _channelsRepository.GetByIdAndUserAsync(channelForUpdateDto.Id, user.Username);
             if (existingChannel == null)
@@ -51,7 +51,7 @@ namespace MediaAPI.Schema.Mutations
 
         [Authorize]
         [UseUser]
-        public async Task<GqlResult<ChannelDto>> DeleteChannel([User] User user, Guid channelId)
+        public async Task<GqlResult<ChannelDto>> DeleteChannelAsync([User] User user, Guid channelId)
         {
             var existingChannel = await _channelsRepository.GetByIdAndUserAsync(channelId, user.Username);
             if (existingChannel == null)

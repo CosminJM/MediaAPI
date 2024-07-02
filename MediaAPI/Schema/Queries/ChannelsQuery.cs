@@ -18,10 +18,11 @@ namespace MediaAPI.Schema.Queries
 
         [Authorize]
         [UseDbContext(typeof(MediaContext))]
-        public IQueryable<ChannelDto> GetChannels([Service] IDbContextFactory<MediaContext> contextFactory)
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 5, AllowBackwardPagination = true, MaxPageSize = 100)]
+        public IQueryable<ChannelDto> GetPaginatedChannels([Service] IDbContextFactory<MediaContext> contextFactory)
         {
             var context = contextFactory.CreateDbContext();
-            var channels = context.Channels.Select(c => _mapper.Map<ChannelDto>(c));
+            var channels = context.Channels.OrderBy(c => c.Name).Select(c => _mapper.Map<ChannelDto>(c));
 
             return channels;
         }
