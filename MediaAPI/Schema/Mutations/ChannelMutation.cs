@@ -39,7 +39,7 @@ namespace MediaAPI.Schema.Mutations
         [UseUser]
         public async Task<GqlResult<ChannelDto>> UpdateChannelAsync([User] User user, ChannelForUpdateDto channelForUpdateDto)
         {
-            var existingChannel = await _channelsRepository.GetByIdAndUserAsync(channelForUpdateDto.Id, user.Username);
+            var existingChannel = await _channelsRepository.GetByIdAndUserAsync(channelForUpdateDto.ChannelId, user.Username);
             if (existingChannel == null)
             {
                 return GqlResult<ChannelDto>.Failure("Channel does not exist.");
@@ -51,9 +51,10 @@ namespace MediaAPI.Schema.Mutations
 
         [Authorize]
         [UseUser]
-        public async Task<GqlResult<ChannelDto>> DeleteChannelAsync([User] User user, Guid channelId)
+        public async Task<GqlResult<ChannelDto>> DeleteChannelAsync([User] User user, string channelId)
         {
-            var existingChannel = await _channelsRepository.GetByIdAndUserAsync(channelId, user.Username);
+            var guid = Guid.Parse(channelId);
+            var existingChannel = await _channelsRepository.GetByIdAndUserAsync(guid, user.Username);
             if (existingChannel == null)
             {
                 return GqlResult<ChannelDto>.Failure("Channel does not exist.");

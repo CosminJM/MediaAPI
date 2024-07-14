@@ -37,6 +37,7 @@ namespace MediaAPI
                 .AddTypeExtension<ChannelMutation>()
                 // Used types as arguments on queries and mutation must be specified
                 .AddType<ChannelForCreationDto>()
+                .AddType<ChannelForUpdateDto>()
                 .AddAuthorization();
 
             builder.Services.AddPooledDbContextFactory<MediaContext>(
