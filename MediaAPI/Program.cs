@@ -83,7 +83,7 @@ namespace MediaAPI
             {
                 corsOptions.AddPolicy("AllowPolicy", policy =>
                 {
-                    policy.WithOrigins("http://localhost:9000", "https://localhost:7000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                    policy.WithOrigins("http://localhost:9000", "https://localhost:7000", "http://localhost:9021").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
                 });
             });
 

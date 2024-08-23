@@ -1,0 +1,57 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    container_name: sqlserver
+    environment:
+    #enter SA password
+      SA_PASSWORD: "<PASSWORD>"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+    networks:
+      - backend-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+     - "9020:8080"
+    depends_on:
+      - sqlserver
+    environment:
+    # Don't forget to edit connection string
+      ConnectionStrings__MediaDb: "Server=sqlserver;Database=MediaDb;User Id=<USER>;Password=<PASSWORD>;TrustServerCertificate=True"
+    networks:
+      - backend-network
+
+  frontend:
+    build:
+      context: "../../../VS Code/Vue/MusicSynchronizer/music-synchronizer"
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "9021:80"
+    depends_on:
+      - backend
+    networks:
+      - backend-network
+
+volumes:
+  sqlserverdata:
+
+networks:
+  backend-network:
+
